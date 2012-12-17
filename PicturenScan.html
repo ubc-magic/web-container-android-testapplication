@@ -1,0 +1,575 @@
+<!doctype html>
+<html>
+	<head>
+	<script type="text/javascript" src="jquery-1.7.2.min.js"></script>  
+	<script type="text/javascript" src="jquery.broker.js"></script>  
+	<script type="text/JavaScript" src="jsDraw2DX.js"></script>
+	<script>	
+	// script goes here
+	var qr_nfc;
+	var accel_instruction_p1;
+	var accel_instruction_p2;
+	var image_tracker_p1 = 0;
+	var image_tracker_p2 = 12;
+	var answer;
+	var questionImage = "http://sinfulseven.net/coffeeshop/question.jpg";
+	var imagelist = new Array();
+	var imageRevealedAlready = new Array();
+	var imageEnlargedFlag = new Array();
+	var currentTimeStamp = 0;
+	
+	
+	for (var i=0;i<12;i++)
+	{
+		imagelist[i] = "tile1p" + i + ".jpg"; 
+		imageRevealedAlready[i] = 0;
+		imageEnglargedFlag = new Array();
+	//	document.write(imagelist[i]);
+	}
+	for (var i=12;i<24;i++)
+	{
+		var tmp = i - 12;
+		imagelist[i] = "tile2p" + tmp + ".jpg";
+		imageRevealedAlready[i] = 0;
+		imageEnglargedFlag = new Array();
+	}
+	
+	$(document).ready(function(){
+		enlargeImage(image_tracker_p1);
+		imageEnlargedFlag[image_tracker_p1] = 1;
+		enlargeImage(image_tracker_p2);
+		imageEnlargedFlag[image_tracker_p2] = 2;
+		startEvent();
+		$('#P1-0').hide();
+		$('#P1-3').hide();
+		$('#P1-6').hide();
+		$('#P1-9').hide();
+		$('#P1-1').hide();
+		$('#P1-4').hide();
+		$('#P1-7').hide();
+		$('#P1-10').hide();
+		$('#P1-2').hide();
+		$('#P1-5').hide();
+		$('#P1-8').hide();
+		$('#P1-11').hide();
+		$('#P2-0').hide();
+		$('#P2-3').hide();
+		$('#P2-6').hide();
+		$('#P2-9').hide();
+		$('#P2-1').hide();
+		$('#P2-4').hide();
+		$('#P2-7').hide();
+		$('#P2-10').hide();
+		$('#P2-2').hide();
+		$('#P2-5').hide();
+		$('#P2-8').hide();
+		$('#P2-11').hide();
+	//	updateEvent();
+		$('#hellobutton').click(function() {
+			$('#hellobutton').hide();
+			$('#P1-0').fadeIn(3000);
+			$('#P1-3').fadeIn(3000);
+			$('#P1-6').fadeIn(3000);
+			$('#P1-9').fadeIn(3000);
+			$('#P1-1').fadeIn(6000);
+			$('#P1-4').fadeIn(6000);
+			$('#P1-7').fadeIn(6000);
+			$('#P1-10').fadeIn(6000);
+			$('#P1-2').fadeIn(9000);
+			$('#P1-5').fadeIn(9000);
+			$('#P1-8').fadeIn(9000);
+			$('#P1-11').fadeIn(9000);
+			$('#P2-0').fadeIn(3000);
+			$('#P2-3').fadeIn(3000);
+			$('#P2-6').fadeIn(3000);
+			$('#P2-9').fadeIn(3000);
+			$('#P2-1').fadeIn(6000);
+			$('#P2-4').fadeIn(6000);
+			$('#P2-7').fadeIn(6000);
+			$('#P2-10').fadeIn(6000);
+			$('#P2-2').fadeIn(9000);
+			$('#P2-5').fadeIn(9000);
+			$('#P2-8').fadeIn(9000);
+			$('#P2-11').fadeIn(9000);
+			getEvent();
+		});
+		
+		$('#add').click(function() {
+			var img = document.createElement("img");
+			var img2 = document.createElement ("img");
+			var text = "image" + 1;
+			var dividentity = "P1-" + 12;
+			var replaceable = document.getElementById(text);
+			var replaceable2 = document.getElementById('image12');
+			img.src = "http://sinfulseven.net/coffeeshop/IMG_20121118_221200.jpg";
+			img.width = 50;
+			img.height = 50;
+			img.alt = 'Image';
+			img2.src = "http://sinfulseven.net/coffeeshop/IMG_20121118_221200.jpg";
+			img2.width = 50;
+			img2.height = 50;
+			img2.alt = 'Image';
+//			document.write("attempting to reveal image 4");
+			revealImage(0);
+			revealImage(1);
+			revealImage(2);
+			revealImage(3);
+			revealImage(4);
+			revealImage(5);
+			revealImage(6);
+			revealImage(7);
+			revealImage(8);
+			revealImage(9);
+			revealImage(10);
+			revealImage(11);
+			revealImage(15);
+			revealImage(19);
+			revealImage(22);
+			
+//			document.getElementById('P1-1').replaceChild(img, replaceable);
+//			document.getElementById(dividentity).replaceChild(img2, replaceable2);
+//			document.getElementById('P1-1-1').replaceChild(img);
+
+		});
+	});
+	
+	function startEvent() {
+		$.get("http://kimberly.magic.ubc.ca:8080/thingbroker/events/thing/picturenscan1", {requester: "picturenscan2", limit: "2"}, function(data,status){
+			//alert("Data is " + JSON.stringify(data));
+			if (!(typeof data[0] === "undefined"))
+			{
+				currentTimeStamp = data[0].serverTimestamp;
+			//	alert("Current time stamp: " + currentTimeStamp);
+			}
+		});
+	}
+	function getEvent() {
+		//alert ("passed data timestamp: " + currentTimeStamp);
+		$.get("http://kimberly.magic.ubc.ca:8080/thingbroker/events/thing/picturenscan1", 
+		{requester: "picturenscan2", timeout: "10", after: currentTimeStamp.toString()}, function(data,status){
+		//alert("Data is " + JSON.stringify(data) );
+		updateEvent(data,status);
+		//alert("passed data");
+		});
+		
+	}
+	
+	function updateEvent(data, status) {
+		var datasets = JSON.stringify(data);
+		//alert("Got here " + datasets);
+		//  alert ("timestamp to look forward to:" + currentTimeStamp);
+		
+		//  alert("Data: " + datasets + "\nStatus: " + status + "\nTest: " + data[0].info.type);
+			var number = 0;
+			var topic = data[number];
+			while (!(typeof topic === "undefined"))
+				{
+				number++;
+				topic=data[number];
+			//	alert("n1 :" + number);
+				}
+			number--;
+			//alert ("n2: " + number);
+			while ( number >= 0)
+			{
+				if (data[number].serverTimestamp > currentTimeStamp)
+					{
+					// alert("Hello");
+					currentTimeStamp = data[number].serverTimestamp;
+				//	alert("Current time Stamp: " + currentTimeStamp);
+					if (data[number].info.type == "nfcResult" || data[number].info.type == "qrResult")
+						gotResult(data[number].info.value);
+					else if (data[number].info.type == "accelData")
+						display_arrows(data[number].info.x, data[number].info.y, data[number].info.z, data[number].info.player);
+					}
+				
+				//alert ("Data: " + JSON.stringify(data[number]) + "number = " + number);
+				number--;
+				topic=data[number];
+			}
+		
+		getEvent();
+		
+	}
+	
+	function display_arrows(x_accel, y_accel, z_accel, player) {
+		var direction;
+		if(x_accel<-3)
+		{	
+			if  (y_accel > 3) 
+				direction = "8";
+			else if (y_accel <-3)
+				direction = "3";
+			else
+				direction ="5";
+		}
+		else if (x_accel > 3)
+		{	
+			if (y_accel >3)
+				direction = "6";
+			else if (y_accel <-3)
+				direction = "1";
+			else
+				direction = "4";
+		}
+		else if (y_accel < -3)
+		{	direction = "2";		}
+		else if (y_accel > 3 )
+		{	direction = "7";		}
+		else
+		{	direction = "0";		}
+		shiftImageTracker(direction, player);
+	}	
+	
+	
+	
+	/*
+	function getAccelDataP1()	{
+		var xmlhttp;
+
+		if (window.XMLHttpRequest)
+		  {// code for IE7+, Firefox, Chrome, Opera, Safari
+		  xmlhttp=new XMLHttpRequest();
+		  }
+		else
+		  {// code for IE6, IE5
+		  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		  }
+		xmlhttp.onreadystatechange=function()
+		  {
+		  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+			{
+			accel_instruction_p1=xmlhttp.responseText;
+			shiftImageTracker(accel_instruction_p1, 1);
+			}
+		  }
+		xmlhttp.open("GET","accelFile1.txt",true);
+		xmlhttp.send();
+		}
+		
+	function getAccelDataP2()	{
+		var xmlhttp;
+
+		if (window.XMLHttpRequest)
+		  {// code for IE7+, Firefox, Chrome, Opera, Safari
+		  xmlhttp=new XMLHttpRequest();
+		  }
+		else
+		  {// code for IE6, IE5
+		  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		  }
+		xmlhttp.onreadystatechange=function()
+		  {
+		  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+			{
+			accel_instruction_p2=xmlhttp.responseText;
+			shiftImageTracker(accel_instruction_p2, 2);
+			}
+		  }
+		xmlhttp.open("GET","accelFile2.txt",true);
+		xmlhttp.send();
+		}
+	
+	function getDataScan() {
+		var xmlhttp;
+
+		if (window.XMLHttpRequest)
+		  {// code for IE7+, Firefox, Chrome, Opera, Safari
+		  xmlhttp=new XMLHttpRequest();
+		  }
+		else
+		  {// code for IE6, IE5
+		  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		  }
+		xmlhttp.onreadystatechange=function()
+		  {
+		  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+			{
+			answer=xmlhttp.responseText;
+			gotResult(answer);
+			}
+		  }
+		xmlhttp.open("GET","responseFile.txt",true);
+		xmlhttp.send();
+		}
+		*/
+	
+	function gotResult(code) {
+			
+		qr_nfc = code;
+		if (qr_nfc == "answer1p1")
+		{
+			revealImage(0);
+			revealImage(7);		
+			revealImage(10);
+		}
+		else if (qr_nfc == "answer1p2")
+		{
+			revealImage(3);
+			revealImage(6);
+			revealImage(8);
+		}
+		else if (qr_nfc == "answer1p3")
+		{
+			revealImage(2);
+			revealImage(1);
+			revealImage(11);
+		}
+		else if (qr_nfc == "answer1p4")
+		{
+			revealImage(4);
+			revealImage(5);
+			revealImage(9);
+		}
+		else if (qr_nfc == "answer2p1")
+		{
+			revealImage(12);
+			revealImage(17);
+			revealImage(20);
+		}
+		else if (qr_nfc == "answer2p2")
+		{
+			revealImage(13);
+			revealImage(16);
+			revealImage(21);
+		}
+		else if (qr_nfc == "answer2p3")
+		{
+			revealImage(14);
+			revealImage(18);
+			revealImage(23);
+		}
+		else if (qr_nfc == "answer2p4")
+		{
+			revealImage(15);
+			revealImage(19);
+			revealImage(22);
+		}
+	}
+	
+	function shiftImageTracker(instruction, player)	{
+	var shiftby = 0;
+	if (instruction < 5 && instruction > 0)
+		{
+		shiftby = instruction-5;
+		}
+	else if (instruction >= 5)
+		{
+		shiftby = instruction-4;
+		}
+	if (player == 1)
+		{
+		var changeresult = image_tracker_p1 +shiftby;
+		if (changeresult >= 0 && changeresult < 12)
+			{
+			shrinkImage(image_tracker_p1);
+			imageEnlargedFlag[image_tracker_p1]= 0;
+			image_tracker_p1 = changeresult;
+			enlargeImage(image_tracker_p1);
+			imageEnlargedFlag[image_tracker_p1]= 1;
+			}
+		
+		}
+	else if (player == 2)
+		{
+		var changeresult = image_tracker_p2 +shiftby;
+		if (changeresult >= 12 && changeresult < 24)
+			{
+			shrinkImage(image_tracker_p2);
+			imageEnlargedFlag[image_tracker_p2]= 0;
+			image_tracker_p2 = changeresult;
+			enlargeImage(image_tracker_p2);
+			imageEnlargedFlag[image_tracker_p2]= 1;
+			}
+		}
+	
+	}
+	
+	function enlargeImage(ID) {
+		var img = document.createElement("img");
+		img.setAttribute("id", "imageEnlarged" + ID);
+		if (ID < 12) 
+			var divid = "P1-" + ID;
+		else if (ID > 11){
+			var tempID = ID-12;
+			var divid = "P2-" + tempID;
+			}
+		if (imageRevealedAlready[ID] == 0)	{
+			var imageid = "image" + ID;
+			img.src = questionImage;
+			}
+		else {
+			var imageid = "imageDisplayed" +ID;
+			img.src = imagelist[ID];
+			}	
+
+		var replaceable = document.getElementById(imageid);
+		img.width = 60;
+		img.height = 60;
+		img.alt = 'Image';
+		
+		document.getElementById(divid).replaceChild(img, replaceable);		
+	}
+	
+	function shrinkImage(ID) {
+		var img = document.createElement("img");
+		var imageid = "imageEnlarged" +ID;
+		img.setAttribute("id", "imageEnlarged" + ID);
+		if (ID < 12) 
+			var divid = "P1-" + ID;
+		else if (ID >= 12){
+			var tempID = ID - 12;
+			var divid = "P2-" + tempID;
+			}
+		if (imageRevealedAlready[ID] == 0)	{
+			img.setAttribute("id", "image" + ID);
+			img.src = questionImage;
+			}
+		else {	
+			img.setAttribute("id", "imageDisplayed" + ID);
+			img.src = imagelist[ID];
+			}	
+
+		var replaceable = document.getElementById(imageid);
+		img.width = 50;
+		img.height = 50;
+		img.alt = 'Image';
+		
+		document.getElementById(divid).replaceChild(img, replaceable);	
+	}
+	
+	function revealImage(ID) {
+		if (imageEnlargedFlag[ID] == 1)
+		{	shrinkImage(ID);	}
+		if (imageRevealedAlready[ID] == 0)
+		{
+			var img = document.createElement("img");
+			img.setAttribute("id", "imageDisplayed" + ID);
+			var imageid = "image" + ID;
+			// document.write("here: " +ID);
+			if (ID < 12) 
+			{	var divid = "P1-" + ID;	}
+			else {
+				var tempID = ID-12;
+				var divid = "P2-" + tempID;
+			//	document.write("temp ID: " + tempID);
+			//	document.write("ID: " +ID);
+				}
+			var replaceable = document.getElementById(imageid);
+			img.width = 50;
+			img.height = 50;
+			img.alt = 'Image';
+			img.src = imagelist[ID];
+			document.getElementById(divid).replaceChild(img, replaceable);
+			
+			imageRevealedAlready[ID] =1;
+		}
+		if (imageEnlargedFlag[ID] == 1)
+		{	enlargeImage(ID); 	}
+	}
+	
+	//var dataresult = setInterval(getDataScan, 400);
+	//var accelresult1 = setInterval(getAccelDataP1, 1201);
+	//var accelresult2 = setInterval(getAccelDataP2, 1202);
+	
+	
+	
+	</script>
+	<style>
+	
+		h1 { 
+			color:orange;
+			text-align:center;
+		}
+		#P1 p {
+			color:blue;
+			position: absolute;
+			font-size:20px;
+			font-family:"Calibri";
+		}
+		#P1 P1-1-2 {	position:absolute;	}
+		#P1-0 {		position:absolute;	}
+		#P1-1 {		position:absolute;	}
+		#P1-2 {		position:absolute;	}
+		#P1-3 {		position:absolute;	}
+		#P1-4 {		position:absolute;	}
+		#P1-5 {		position:absolute;	}
+		#P1-6 {		position:absolute;	}
+		#P1-7 {		position:absolute;	}
+		#P1-8 {		position:absolute;	}
+		#P1-9 {		position:absolute;	}
+		#P1-10 {	position:absolute;	}
+		#P1-11 {	position:absolute;	}
+		#P2-0 {		position:absolute;	}
+		#P2-1 {		position:absolute;	}
+		#P2-2 {		position:absolute;	}
+		#P2-3 {		position:absolute;	}
+		#P2-4 {		position:absolute;	}
+		#P2-5 {		position:absolute;	}
+		#P2-6 {		position:absolute;	}
+		#P2-7 {		position:absolute;	}
+		#P2-8 {		position:absolute;	}
+		#P2-9 {		position:absolute;	}
+		#P2-10 {	position:absolute;	}
+		#P2-11 {	position:absolute;	}
+		
+		#P2 p {
+			color:green;
+			position:absolute;
+			font-size:20px;
+			font-family:"Calibri";
+		}
+				
+	</style>
+		<meta charset="utf-8">
+		<title>PictureNScan</title>
+	</head>
+	
+	
+	<body>
+	
+	
+	
+	<h1>Picture N Scan </h1>
+	<div id="P1">
+		<p id="nameP1" style="top:50px; left: 50px">Player1</p>
+	</div>
+	<div id="P1-0" style="top:125px; left: 50px"><img width=50 height=50 src="http://sinfulseven.net/coffeeshop/question.jpg" id="image0" alt="Image" /></div>
+	<div id="P1-1" style="top:125px; left: 110px"><img width=50 height=50 src="http://sinfulseven.net/coffeeshop/question.jpg" id="image1" alt="Image" /></div>
+		
+	
+	<div id="P1-2" style="top:125px; left: 170px"><img width=50 height=50 src="http://sinfulseven.net/coffeeshop/question.jpg" id="image2" alt="Image" /></div>
+	<div id="P1-3" style="top:185px; left: 50px"><img width=50 height=50 src="http://sinfulseven.net/coffeeshop/question.jpg" id="image3" alt="Image" /></div>
+	<div id="P1-4" style="top:185px; left: 110px"><img width=50 height=50 src="http://sinfulseven.net/coffeeshop/question.jpg" id="image4" alt="Image" /></div>
+	<div id="P1-5" style="top:185px; left: 170px"><img width=50 height=50 src="http://sinfulseven.net/coffeeshop/question.jpg" id="image5" alt="Image" /></div>
+	<div id="P1-6" style="top:245px; left: 50px"><img width=50 height=50 src="http://sinfulseven.net/coffeeshop/question.jpg" id="image6" alt="Image" /></div>
+	<div id="P1-7" style="top:245px; left: 110px"><img width=50 height=50 src="http://sinfulseven.net/coffeeshop/question.jpg" id="image7" alt="Image" /></div>
+	<div id="P1-8" style="top:245px; left: 170px"><img width=50 height=50 src="http://sinfulseven.net/coffeeshop/question.jpg" id="image8" alt="Image" /></div>
+	<div id="P1-9" style="top:305px; left: 50px"><img width=50 height=50 src="http://sinfulseven.net/coffeeshop/question.jpg" id="image9" alt="Image" /></div>
+	<div id="P1-10" style="top:305px; left: 110px"><img width=50 height=50 src="http://sinfulseven.net/coffeeshop/question.jpg" id="image10" alt="Image" /></div>
+	<div id="P1-11" style="top:305px; left: 170px"><img width=50 height=50 src="http://sinfulseven.net/coffeeshop/question.jpg" id="image11" alt="Image" /></div>
+	<div id="P2">
+		<p id="nameP2" style="top:50px; left: 450px">Player2</p>
+	</div>
+
+	<div id="P2-0" style="top:125px; left: 450px"><img width=50 height=50 src="http://sinfulseven.net/coffeeshop/question.jpg" id="image12" alt="Image" /></div>
+	<div id="P2-1" style="top:125px; left: 510px"><img width=50 height=50 src="http://sinfulseven.net/coffeeshop/question.jpg" id="image13" alt="Image" /></div>
+	<div id="P2-2" style="top:125px; left: 570px"><img width=50 height=50 src="http://sinfulseven.net/coffeeshop/question.jpg" id="image14" alt="Image" /></div>
+	<div id="P2-3" style="top:185px; left: 450px"><img width=50 height=50 src="http://sinfulseven.net/coffeeshop/question.jpg" id="image15" alt="Image" /></div>
+	<div id="P2-4" style="top:185px; left: 510px"><img width=50 height=50 src="http://sinfulseven.net/coffeeshop/question.jpg" id="image16" alt="Image" /></div>
+	<div id="P2-5" style="top:185px; left: 570px"><img width=50 height=50 src="http://sinfulseven.net/coffeeshop/question.jpg" id="image17" alt="Image" /></div>
+	<div id="P2-6" style="top:245px; left: 450px"><img width=50 height=50 src="http://sinfulseven.net/coffeeshop/question.jpg" id="image18" alt="Image" /></div>
+	<div id="P2-7" style="top:245px; left: 510px"><img width=50 height=50 src="http://sinfulseven.net/coffeeshop/question.jpg" id="image19" alt="Image" /></div>
+	<div id="P2-8" style="top:245px; left: 570px"><img width=50 height=50 src="http://sinfulseven.net/coffeeshop/question.jpg" id="image20" alt="Image" /></div>
+	<div id="P2-9" style="top:305px; left: 450px"><img width=50 height=50 src="http://sinfulseven.net/coffeeshop/question.jpg" id="image21" alt="Image" /></div>
+	<div id="P2-10" style="top:305px; left: 510px"><img width=50 height=50 src="http://sinfulseven.net/coffeeshop/question.jpg" id="image22" alt="Image" /></div>
+	<div id="P2-11" style="top:305px; left: 570px"><img width=50 height=50 src="http://sinfulseven.net/coffeeshop/question.jpg" id="image23" alt="Image" /></div>
+	
+	<br>
+	<button id="hellobutton">Start Game</button>
+	
+	</body>
+	
+	
+	
+</html>

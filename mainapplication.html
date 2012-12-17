@@ -1,0 +1,349 @@
+<!doctype html>
+<html>
+	<head>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+	<script type="text/JavaScript" src="jsDraw2DX.js"></script>
+	<script type="text/JavaScript">
+		//initializes the original value of the UrL
+		var UrL= document.URL;
+		var datasets;
+		var playernumber;
+		var redirectlink;
+		var x_value_prev=75;
+		var y_value_prev=75;
+		var startpt = new jxPoint(x_value_prev,y_value_prev);
+		var line = new jxLine(startpt,startpt, new jxPen(new jxColor("red"),'0.1px'));
+		var cir1 = new jxCircle(startpt, 0, new jxPen(new jxColor("red"),'0.1px'), new jxBrush(new jxColor('yellow')));
+		var cir2 = new jxCircle(startpt, 0, new jxPen(new jxColor("red"),'0.1px'), new jxBrush(new jxColor('yellow')));
+		$(document).ready(function(){
+			//starts the program by initializing a few buttons
+			$("#player1").click(function(){
+				$("#player1").hide();
+				$("#player2").hide();
+				$("#setupgame").hide();
+				$("#camera").fadeIn(2000);
+				$("#qrCode").fadeIn(2000);
+				$("#accelerometer").fadeIn(2000);
+				$("#back").fadeIn(2000);
+				playernumber = 1;
+				
+				//Create jsGraphics object
+				var gr = new jxGraphics(document.getElementById("graphics"));
+
+				//Create jxColor object
+				var col = new jxColor("black");
+
+				//Create jxPen object
+				var pen = new jxPen(col,'0.25px');
+
+				//Draw a Line between 2 points
+				
+				//Define end points to draw line
+				var pt1 = new jxPoint(75,00);
+				var pt2 = new jxPoint(75,150);
+				
+				var axis = new jxLine(pt1,pt2,pen);
+				axis.draw(gr); 
+				
+				pt1 = new jxPoint(0,75);
+				pt2 = new jxPoint(150,75);
+				axis = new jxLine(pt1,pt2,pen);
+				axis.draw(gr);
+				
+			});
+			$("#player2").click(function(){
+				$("#player1").hide();
+				$("#player2").hide();
+				$("#setupgame").hide();
+				$("#camera").fadeIn(2000);
+				$("#qrCode").fadeIn(2000);
+				$("#accelerometer").fadeIn(2000);
+				$("#back").fadeIn(2000);
+				playernumber = 2;
+				
+								//Create jsGraphics object
+				var gr = new jxGraphics(document.getElementById("graphics"));
+
+				//Create jxColor object
+				var col = new jxColor("black");
+
+				//Create jxPen object
+				var pen = new jxPen(col,'0.25px');
+
+				//Draw a Line between 2 points
+				
+				//Define end points to draw line
+				var pt1 = new jxPoint(75,00);
+				var pt2 = new jxPoint(75,150);
+				
+				var axis = new jxLine(pt1,pt2,pen);
+				axis.draw(gr); 
+				
+				pt1 = new jxPoint(0,75);
+				pt2 = new jxPoint(150,75);
+				axis = new jxLine(pt1,pt2,pen);
+				axis.draw(gr);
+				
+			});	
+			$("#setupgame").click(function(){
+				$("#player1").hide();
+				$("#player2").hide();
+				$("#setupgame").hide();
+				$("#NFC1").fadeIn(2000);
+				$("#NFC2").fadeIn(2000);
+				$("#NFC3").fadeIn(2000);
+				$("#NFC4").fadeIn(2000);
+				$("#NFC5").fadeIn(2000);
+				$("#NFC6").fadeIn(2000);
+				$("#NFC7").fadeIn(2000);
+				$("#NFC8").fadeIn(2000);
+				$("#back").fadeIn(2000);
+
+				
+			});	
+			$("#back").click(function(){
+				$("#NFC1").hide();
+				$("#NFC2").hide();
+				$("#NFC3").hide();
+				$("#NFC4").hide();
+				$("#NFC5").hide();
+				$("#NFC6").hide();
+				$("#NFC7").hide();
+				$("#NFC8").hide();
+				$("#camera").hide();
+				$("#qrCode").hide();
+				$("#accelerometer").hide();
+				$("#back").hide();
+				$("#player1").fadeIn(2000);
+				$("#player2").fadeIn(2000);
+				$("#setupgame").fadeIn(2000);
+			});
+			
+			//starts the camera display on the website
+			$("#camera").click(function(){
+				redirectlink = "http://www.sinfulseven.net/coffeeshop/camera?ret=http://www.sinfulseven.net/coffeeshop&name=image&upload_url=http://www.sinfulseven.net/coffeeshop/multipart.php&player=" + playernumber;
+				window.location = redirectlink;
+			});
+			
+			$("#qrCode").click(function(){
+				redirectlink = "http://www.sinfulseven.net/coffeeshop/scan?ret={//code//}&player=" + playernumber;
+				window.location = redirectlink;
+			});
+			
+			$("#accelerometer").click(function(){
+				redirectlink = "http://www.sinfulseven.net/coffeeshop/accel?frequency=1.5&player=" + playernumber;
+				window.location = redirectlink;
+			});			
+			
+			$("#NFC1").click(function(){
+				redirectlink = "http://www.sinfulseven.net/coffeeshop/nfc?name=Gabriel&message=answer1p1&player=" + playernumber;
+				window.location = redirectlink;
+			});
+			$("#NFC2").click(function(){
+				redirectlink = "http://www.sinfulseven.net/coffeeshop/nfc?name=Gabriel&message=answer1p2&player=" + playernumber;
+				window.location = redirectlink;
+			});
+			$("#NFC3").click(function(){
+				redirectlink = "http://www.sinfulseven.net/coffeeshop/nfc?name=Gabriel&message=answer1p3&player=" + playernumber;
+				window.location = redirectlink;
+			});
+			$("#NFC4").click(function(){
+				redirectlink = "http://www.sinfulseven.net/coffeeshop/nfc?name=Gabriel&message=answer1p4&player=" + playernumber;
+				window.location = redirectlink;
+			});
+			$("#NFC5").click(function(){
+				redirectlink = "http://www.sinfulseven.net/coffeeshop/nfc?name=Gabriel&message=answer2p1&player=" + playernumber;
+				window.location = redirectlink;
+			});
+			$("#NFC6").click(function(){
+				redirectlink = "http://www.sinfulseven.net/coffeeshop/nfc?name=Gabriel&message=answer2p2&player=" + playernumber;
+				window.location = redirectlink;
+			});
+			$("#NFC7").click(function(){
+				redirectlink = "http://www.sinfulseven.net/coffeeshop/nfc?name=Gabriel&message=answer2p3&player=" + playernumber;
+				window.location = redirectlink;
+			});
+			$("#NFC8").click(function(){
+				redirectlink = "http://www.sinfulseven.net/coffeeshop/nfc?name=Gabriel&message=answer2p4&player=" + playernumber;
+				window.location = redirectlink;
+			});
+			
+			$("#displaypicture").click(function(){
+			display_image(datasets.image, 480, 640, 'Image');
+			});
+			
+		});
+		
+		function gotImage(data) {
+			datasets = JSON.parse(data);
+			}
+		function gotNFC(data) {
+			var xmlhttp;
+			if (window.XMLHttpRequest)
+				{// code for IE7+, Firefox, Chrome, Opera, Safari
+				xmlhttp=new XMLHttpRequest();
+				}
+			else
+				{// code for IE6, IE5
+				xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+				}
+			xmlhttp.open("GET","acceltransfer.php?instruction=2&scan_response="+data,true);
+			xmlhttp.send();
+		}
+		function gotQR(data) {
+			var xmlhttp;
+			if (window.XMLHttpRequest)
+				{// code for IE7+, Firefox, Chrome, Opera, Safari
+				xmlhttp=new XMLHttpRequest();
+				}
+			else
+				{// code for IE6, IE5
+				xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+				}
+			xmlhttp.open("GET","acceltransfer.php?instruction=2&scan_response="+data,true);
+			xmlhttp.send();
+		}
+		function updateAccelData (data) {
+			datasets = JSON.parse(data);
+			draw_direction(datasets.x, datasets.y, datasets.z, datasets.player);
+			display_arrows(datasets.x, datasets.y, datasets.z, datasets.player);
+		}
+		
+		function draw_direction(x_accel, y_accel, z_accel, player) {
+		line.remove();
+		cir1.remove();
+		cir2.remove();
+		
+		var x_value;
+		var y_value;
+		y_value = (y_accel*7.5) + 75;
+		if (x_accel > 0)
+			x_value = 75 - (x_accel*7.5);
+		else if (x_accel <= 0)
+			x_value = (Math.abs(x_accel) * 7.5) + 75;
+		//alert ("x: " + x_value + " y: " + y_value);
+		
+		//Create jsGraphics object
+		var gr = new jxGraphics(document.getElementById("graphics"));
+		
+
+		//Create jxColor object
+		var col = new jxColor("red");
+		var brushYellow = new jxBrush(new jxColor('yellow'));
+		var brushRed = new jxBrush(new jxColor('red'));
+		
+		//Create jxPen object
+		var pen = new jxPen(col,'2px');
+
+		//Draw a Line between 2 points
+		
+		//Define end points to draw line
+		var pt1 = new jxPoint(x_value,y_value);
+		var pt2 = new jxPoint(x_value_prev,y_value_prev);
+		x_value_prev = x_value;
+		y_value_prev = y_value;
+		
+		cir1= new jxCircle(pt1, 4, pen, brushYellow);
+		cir2= new jxCircle(pt2, 3, pen, brushRed);
+		
+		//Create line object  
+		line = new jxLine(pt1,pt2,pen);
+	   
+		//Draw the line on the graphics
+		line.draw(gr);
+		cir1.draw(gr);
+		cir2.draw(gr);
+		
+		}
+		
+		function display_arrows(x_accel, y_accel, z_accel, player) {
+			var direction;
+			if(x_accel<-3)
+			{	
+				if  (y_accel > 3) 
+					direction = "8";
+				else if (y_accel <-3)
+					direction = "3";
+				else
+					direction ="5";
+			}
+			else if (x_accel > 3)
+			{	
+				if (y_accel >3)
+					direction = "6";
+				else if (y_accel <-3)
+					direction = "1";
+				else
+					direction = "4";
+			}
+			else if (y_accel < -3)
+			{	direction = "2";		}
+			else if (y_accel > 3 )
+			{	direction = "7";		}
+			else
+			{	direction = "0";		}
+			postAccelInfo(direction, player);
+			
+		}
+		
+		function postAccelInfo(data, playerinfo)
+			{
+			var xmlhttp;
+			if (window.XMLHttpRequest)
+				{// code for IE7+, Firefox, Chrome, Opera, Safari
+				xmlhttp=new XMLHttpRequest();
+				}
+			else
+				{// code for IE6, IE5
+				xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+				}
+			xmlhttp.open("GET","acceltransfer.php?instruction=1&player="+playerinfo+"&accel_direction="+data,true);
+			xmlhttp.send();
+			}
+			
+		
+		function display_image(src, width, height, alt) {
+			var img = document.createElement("img");
+			img.src = src;
+			img.width = width;
+			img.height = height;
+			img.alt = alt;
+			document.body.appendChild(img);
+			}
+/*		function processAjaxData(response, urlPath){
+		 document.getElementById("content").innerHTML = response.html;
+		 document.title = response.pageTitle;
+		 window.history.pushState({"html":response.html,"pageTitle":response.pageTitle},"Camera", urlPath);
+		}
+*/
+	</script>
+	<style>
+		a.test {font-weight:bold; }
+
+	</style>
+		<meta charset="utf-8">
+		<title>Demo</title>
+	</head>
+	<body>
+		<p id="content">Press a button</p>
+		<button id="player1">Player 1</button>
+		<button id="player2">Player 2</button>
+		<button id="setupgame">Setup Game</button>
+		<input id="camera" style="display:none;" type=button value='Camera'><br>
+		<input id ="qrCode" style="display:none;" type=button value='QRCode'><br>
+		<input id ="accelerometer" style="display:none;" type=button value='Accelerometer'><br>
+		<div id="graphics" style="overflow:hidden;position:relative;width:150px;height:150px;"></div> 
+		<input id ="NFC1" style="display:none;" type=button value='NFCplayer1-1'>
+		<input id ="NFC2" style="display:none;" type=button value='NFCplayer1-2'><br>
+		<input id ="NFC3" style="display:none;" type=button value='NFCplayer1-3'>
+		<input id ="NFC4" style="display:none;" type=button value='NFCplayer1-4'><br>
+		<input id ="NFC5" style="display:none;" type=button value='NFCplayer2-1'>
+		<input id ="NFC6" style="display:none;" type=button value='NFCplayer2-2'><br>
+		<input id ="NFC7" style="display:none;" type=button value='NFCplayer2-3'>
+		<input id ="NFC8" style="display:none;" type=button value='NFCplayer2-4'><br>
+		<button id="back" style="display:none;">Back</button>
+		
+		<button id="displaypicture" style="display:none;">Display Picture</button><br>
+	
+	</body>
+</html>
